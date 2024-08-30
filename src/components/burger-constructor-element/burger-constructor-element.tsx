@@ -1,12 +1,11 @@
 import { FC, memo } from 'react';
 import { BurgerConstructorElementUI } from '@ui';
 import { BurgerConstructorElementProps } from './type';
-import { useSelector } from 'react-redux';
 import {
   selectConstructorItems,
   setConstructorItem
 } from '../../slices/rootSlice';
-import { useDispatch } from '../../services/store';
+import { useDispatch, useSelector } from '../../services/store';
 import { TIngredient } from '@utils-types';
 import { v4 as uuidv4 } from 'uuid';
 
