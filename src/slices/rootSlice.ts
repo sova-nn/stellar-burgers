@@ -30,9 +30,10 @@ type BurgersState = {
   isAuthChecked: boolean;
   user: TUser | null;
   isIngredientsLoading: boolean;
+  isLoading: boolean;
 };
 
-const initialState: BurgersState = {
+export const initialState: BurgersState = {
   feedData: {
     success: true,
     orders: [],
@@ -63,7 +64,8 @@ const initialState: BurgersState = {
   },
   isAuthChecked: true,
   user: null,
-  isIngredientsLoading: false
+  isIngredientsLoading: false,
+  isLoading: false
 };
 
 export const loadFeedData = createAsyncThunk<TFeedsResponse>(
@@ -143,30 +145,43 @@ export const rootSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+        .addCase(loadFeedData.pending, (state, action) => {
+          state.isLoading = true;
+        })
       .addCase(loadFeedData.fulfilled, (state, action) => {
         state.feedData = action.payload;
+        state.isLoading = true;
       })
       .addCase(loadFeedData.rejected, (state, action) => {
         console.log('error', action);
         state.feedData = initialState.feedData;
+        state.isLoading = false;
       });
     builder
       .addCase(loadOrders.pending, (state, action) => {
         state.orders = [];
+        state.isLoading = true;
       })
       .addCase(loadOrders.fulfilled, (state, action) => {
         state.orders = action.payload;
+        state.isLoading = false;
       })
       .addCase(loadOrders.rejected, (state, action) => {
         console.log('error', action);
         state.orders = [];
+        state.isLoading = false;
       });
     builder
+      .addCase(loadOrder.pending, (state, action) => {
+        state.isLoading = true;
+      })
       .addCase(loadOrder.fulfilled, (state, action) => {
         state.selectedOrder = action.payload.orders[0];
+        state.isLoading = true;
       })
       .addCase(loadOrder.rejected, (state, action) => {
         console.log('error', action);
+        state.isLoading = false;
         state.selectedOrder = initialState.selectedOrder;
       });
     builder
@@ -232,11 +247,16 @@ export const rootSlice = createSlice({
         state.isAuthChecked = true;
       });
     builder
+      .addCase(updateUser.pending, (state, action) => {
+        state.isAuthChecked = false;
+      })
       .addCase(updateUser.fulfilled, (state, action) => {
         state.user = action.payload.user;
+        state.isAuthChecked = true;
       })
       .addCase(updateUser.rejected, (state, action) => {
         console.log('error', action);
+        state.isAuthChecked = true;
       });
   }
 });
@@ -254,6 +274,7 @@ export const userDataSelector = (state: RootState) => state.user;
 export const isAuthCheckedSelector = (state: RootState) => state.isAuthChecked;
 export const selectIsIngredientsLoading = (state: RootState) =>
   state.isIngredientsLoading;
+export const selectIsLoading = (state: RootState) => state.isLoading;
 
 export const {
   setConstructorItem,
