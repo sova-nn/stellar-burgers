@@ -1,0 +1,14 @@
+{
+  // для расширения основного конфига проекта
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    // чтобы избежать пересечения с типами jest
+    "types": ["cypress"]
+  },
+  "include": [
+    "../node_modules/cypress",
+    "./**/*.tsx",
+    "./**/*.ts"
+  ]
+}
